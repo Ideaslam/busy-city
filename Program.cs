@@ -22,19 +22,21 @@ namespace busy_city
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            //Application.Run(new Form1());
             List<Citizen> Citis = new List<Citizen>();
             List<Scooter> Scoots = new List<Scooter>();
             //area of interest, rad.10km, square
-            city.max_x = 0.08983 * 10 + city.lng;
-            city.min_x = city.lng - 0.08983 * 10;
-            city.max_y = 0.08983 * 10 + city.lati;
-            city.min_y = city.lati - 0.08983 * 10;
+            city.max_y = 0.008983 * 5 + 13.3813604;
+            city.min_y = 13.3813604 - 0.008983 * 5;
+            city.max_x = 0.008983 * 5 + 52.4984103;
+            city.min_x = 52.4984103 - 0.008983 * 5;
             //1degree=111.196672km
             //10km=0.08983degree
             //creating 10 citizens
             Random rand = new Random();
             //initialising citizens
+            System.IO.StreamWriter file = new System.IO.StreamWriter("C:\\Users\\dashersw\\Desktop\\positions1.txt");
+
             for (int i = 0; i < 10; i++)
             {
 
@@ -58,6 +60,7 @@ namespace busy_city
 
             }
             //initialising scooters
+
             for (int i = 0; i < 20; i++)
             {
 
@@ -68,7 +71,10 @@ namespace busy_city
                 Sco.idle = true;
                 Sco.velocity = 0;
                 Scoots.Add(Sco);
+
+                file.WriteLine("{ \"type\": \"scooter\", \"name\": \"Scooter " + i + "\", \"pos_x\": " + Sco.pos_x + ", \"pos_y\": " + Sco.pos_y + "}");
             }
+
             string Orig;
             string dest;
             double x_step;
@@ -83,11 +89,10 @@ namespace busy_city
             string export;
             var g = new Coding();
             //!!!!!!!!!!!!paste your own Google Api Key here: 
-            g.Key = "KEY";
-            System.IO.StreamWriter file = new System.IO.StreamWriter("C:\\positions1.txt");
-
+            g.Key = "AIzaSyAe5AUU7KMt30oUalLL22tO4uVUQvUZiAk";
+            
             //while (true)
-            for (int kj=0;kj<1000;kj++)
+            for (int kj=0;kj<20000;kj++)
             {
                 for (int i = 0; i < 10; i++)
                 {
@@ -274,8 +279,12 @@ namespace busy_city
                     {
                         Citis[i].timeToWait = Citis[i].timeToWait - 1;
                     }
-                    export = i + ".  " + Citis[i].pos_x + ", " + Citis[i].pos_y + ", " + Citis[i].stepInd+"  "+ Citis[i].status + "  " + Citis[i].CitsScooter + "\n";
+                    export = "{ \"iteration\": " + kj + ", \"type\": \"citizen\", \"name\": \"Citizen " + i + "\", \"pos_x\": " + Citis[i].pos_x + ", \"pos_y\": " + Citis[i].pos_y + ", \"stepIndex\": " + Citis[i].stepInd+ ", \"status\": \"" + Citis[i].status + "\", \"scooterId\": " + Citis[i].CitsScooter + " }";
 
+                    file.WriteLine(export);
+
+                    var sc = Scoots[Citis[i].CitsScooter];
+                    export = "{ \"iteration\": " + kj + ", \"type\": \"scooter\", \"name\": \"Scooter " + Citis[i].CitsScooter + "\", \"pos_x\": " + sc.pos_x + ", \"pos_y\": " + sc.pos_y + "}";
                     file.WriteLine(export);
                 }
 
